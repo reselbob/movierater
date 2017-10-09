@@ -1,0 +1,313 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This API allows users to rate movies against movies listed in IMDB",
+        "version": "1.0.0",
+        "title": "Movie Rater",
+        "contact": {
+            "email": "reselbob@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "tags": [{
+        "name": "admins",
+        "description": "Secured Admin-only calls"
+    }, {
+        "name": "developers",
+        "description": "Operations available to regular developers"
+    }],
+    "paths": {
+        "/movies": {
+            "get": {
+                "tags": ["developers"],
+                "summary": "searches movies listed in IMBD",
+                "operationId": "searchMovies",
+                "description": "By passing in the appropriate options, you can search for movies in the system",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "query",
+                    "name": "searchString",
+                    "description": "pass an optional search string for looking up movies",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "in": "query",
+                    "name": "skip",
+                    "description": "number of records to skip for pagination",
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                }, {
+                    "in": "query",
+                    "name": "limit",
+                    "description": "maximum number of records to return",
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 50
+                }],
+                "responses": {
+                    "200": {
+                        "description": "search results matching criteria",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/movie"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "bad input parameter"
+                    }
+                }
+            }
+        },
+        "/ratings": {
+            "get": {
+                "tags": ["developers"],
+                "summary": "searches ratings in the system",
+                "operationId": "searchRatings",
+                "description": "By passing in the appropriate options, you can search for ratings in the system",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "query",
+                    "name": "searchString",
+                    "description": "pass an optional search string for looking up ratings",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "in": "query",
+                    "name": "skip",
+                    "description": "number of records to skip for pagination",
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                }, {
+                    "in": "query",
+                    "name": "limit",
+                    "description": "maximum number of records to return",
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 50
+                }],
+                "responses": {
+                    "200": {
+                        "description": "search results matching criteria",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/knownRating"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "bad input parameter"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["developers"],
+                "summary": "posts a rating to the system",
+                "operationId": "postRatings",
+                "description": "Posts a rating object to the system",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "rating",
+                    "description": "rating to add",
+                    "schema": {
+                        "$ref": "#/definitions/rating"
+                    }
+                }],
+                "responses": {
+                    "201": {
+                        "description": "rating created"
+                    },
+                    "400": {
+                        "description": "invalid input, object invalid"
+                    },
+                    "409": {
+                        "description": "an rating with the id already exists"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": ["developers"],
+                "summary": "searches users listed in system",
+                "operationId": "searchUsers",
+                "description": "By passing in the appropriate options, you can search for user in the system",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "query",
+                    "name": "searchString",
+                    "description": "pass an optional search string for looking up user",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "in": "query",
+                    "name": "skip",
+                    "description": "number of records to skip for pagination",
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                }, {
+                    "in": "query",
+                    "name": "limit",
+                    "description": "maximum number of records to return",
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "maximum": 50
+                }],
+                "responses": {
+                    "200": {
+                        "description": "search results matching criteria",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/user"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "bad input parameter"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["developers"],
+                "summary": "posts a user to the system",
+                "operationId": "postUser",
+                "description": "Posts a ratings object to the system",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "user",
+                    "description": "user to add",
+                    "schema": {
+                        "$ref": "#/definitions/user"
+                    }
+                }],
+                "responses": {
+                    "201": {
+                        "description": "user created"
+                    },
+                    "400": {
+                        "description": "invalid input, object invalid"
+                    },
+                    "409": {
+                        "description": "a user with the email already exists"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "movie": {
+            "type": "object",
+            "required": ["id", "title", "studio", "releaseDate", "genre"],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Return of the Jedi"
+                },
+                "releaseDate": {
+                    "type": "string",
+                    "format": "int32",
+                    "example": "2016-08-29T09:12:33.001Z"
+                },
+                "studio": {
+                    "type": "string",
+                    "example": "LucasFilms"
+                },
+                "genre": {
+                    "$ref": "#/definitions/genre"
+                }
+            }
+        },
+        "genre": {
+            "type": "string",
+            "enum": ["action", "comedy", "drama", "horror", "syfy", "suspense"]
+        },
+        "rating": {
+            "type": "object",
+            "required": ["movie", "userEmail", "value", "comment"],
+            "properties": {
+                "movie": {
+                    "$ref": "#/definitions/movie"
+                },
+                "userEmail": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "rater@mytown.com"
+                },
+                "value": {
+                    "type": "string",
+                    "format": "int32",
+                    "example": "3"
+                },
+                "comment": {
+                    "type": "string"
+                }
+            }
+        },
+        "knownRating": {
+            "allOf": [{
+                "required": ["id", "createDate"],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+                    },
+                    "createDate": {
+                        "type": "string",
+                        "format": "int32",
+                        "example": "2016-08-29T09:12:33.001Z"
+                    }
+                }
+            }, {
+                "$ref": "#/definitions/rating"
+            }]
+        },
+        "user": {
+            "type": "object",
+            "required": ["userEmail", "userName", "firstName", "lastName"],
+            "properties": {
+                "userEmail": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "bjounes@sample.com"
+                },
+                "userName": {
+                    "type": "string",
+                    "example": "bjones"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "Bill"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Jones"
+                }
+            }
+        }
+    },
+    "host": "localhost",
+    "basePath": "/api/MovieRater/v1",
+    "schemes": ["https"]
+}
